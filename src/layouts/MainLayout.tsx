@@ -11,7 +11,7 @@ import {
   Tabs,
   Tab,
 } from '@mui/material';
-import { GitHub, Home, Info, Speed, AccountTree, Build, CloudUpload } from '@mui/icons-material';
+import { GitHub, Home, Info, Speed, AccountTree, Build, CloudUpload, PlayCircle } from '@mui/icons-material';
 
 const MainLayout: React.FC = () => {
   const navigate = navigateFn();
@@ -31,6 +31,7 @@ const MainLayout: React.FC = () => {
     { label: 'Architecture', path: '/architecture', icon: <AccountTree /> },
     { label: 'Dev Practices', path: '/development', icon: <Build /> },
     { label: 'Deploy Guide', path: '/deployment', icon: <CloudUpload /> },
+    { label: 'Getting Started', path: '/getting-started', icon: <PlayCircle /> },
   ];
 
   // Determine current tab index

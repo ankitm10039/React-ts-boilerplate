@@ -5,6 +5,7 @@ import About from '../pages/About';
 import Architecture from '../pages/Architecture';
 import Development from '../pages/Development';
 import Deployment from '../pages/Deployment';
+import GettingStarted from '../pages/GettingStarted';
 import NotFound from '../pages/NotFound';
 
 export const router = createBrowserRouter([
@@ -31,6 +32,10 @@ export const router = createBrowserRouter([
       {
         path: 'deployment',
         element: <Deployment />,
+      },
+      {
+        path: 'getting-started',
+        element: <GettingStarted />,
       },
       {
         path: '*',
