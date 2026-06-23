@@ -3,10 +3,11 @@
  * All environment variables are validated and centralized here.
  */
 export const CONFIG = {
-  APP_NAME: 'VibeApp',
+  APP_NAME: import.meta.env.VITE_APP_NAME || 'VibeApp',
   ENV: import.meta.env.MODE || 'development',
   API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://api.example.com',
   API_TIMEOUT: 10000,
+  ENABLE_ANALYTICS: import.meta.env.VITE_ENABLE_ANALYTICS === 'true',
   
   // Feature flags
   FEATURES: {
