@@ -1,0 +1,28 @@
+/**
+ * Centralized application constants.
+ */
+
+export const HTTP_STATUS = {
+  OK: 200,
+  CREATED: 201,
+  ACCEPTED: 202,
+  NO_CONTENT: 204,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  INTERNAL_SERVER_ERROR: 500,
+} as const;
+
+export const DATE_FORMATS = {
+  DISPLAY_DATE: 'MMM DD, YYYY',
+  DISPLAY_TIME: 'hh:mm A',
+  DISPLAY_DATE_TIME: 'MMM DD, YYYY hh:mm A',
+  ISO: 'YYYY-MM-DDTHH:mm:ssZ',
+} as const;
+
+export const USER_ROLES = {
+  ADMIN: 'ADMIN',
+  USER: 'USER',
+  GUEST: 'GUEST',
+} as const;
