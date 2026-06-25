@@ -1,11 +1,11 @@
 {
-  "name": "create-vibe-app",
-  "version": "1.0.0",
+  "name": "@ankitm10039/create-vibe-app",
+  "version": "1.0.3",
   "description": "CLI tool to bootstrap React + TS + MUI boilerplate",
   "main": "index.js",
   "type": "module",
   "bin": {
-    "create-vibe-app": "./index.js"
+    "create-vibe-app": "index.js"
   },
   "dependencies": {
     "degit": "^2.8.4",

@@ -1,7 +1,7 @@
-import React from 'react';
-import type { ReactNode } from 'react';
-import { Button, CircularProgress } from '@mui/material';
 import type { ButtonProps } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
+import type { ReactNode } from 'react';
+import React from 'react';
 
 export interface CustomButtonProps extends ButtonProps {
   loading?: boolean;

@@ -45,18 +45,31 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
       onClose={onClose}
       maxWidth={maxWidth}
       fullWidth={fullWidth}
-      sx={{
-        '& .MuiDialog-paper': {
-          borderRadius: 3,
-          p: 1,
-        },
-      }}
       {...dialogProps}
     >
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: 1 }}>
-        <DialogTitle sx={{ m: 0, p: 2, fontWeight: 700, flexGrow: 1 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          pr: 1,
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
+        <DialogTitle sx={{ m: 0, p: 2, flexGrow: 1 }}>
           {typeof title === 'string' ? (
-            <Typography variant="h6" component="span" sx={{ fontWeight: 700 }}>
+            <Typography
+              variant="h6"
+              component="span"
+              sx={{
+                fontWeight: 700,
+                fontFamily: '"JetBrains Mono", monospace',
+                fontSize: '13px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+              }}
+            >
               {title}
             </Typography>
           ) : (
@@ -67,25 +80,29 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
           <IconButton
             aria-label="close"
             onClick={onClose}
-            sx={{
-              color: 'text.secondary',
-            }}
+            size="small"
+            sx={{ color: 'text.secondary' }}
           >
-            <Close />
+            <Close fontSize="small" />
           </IconButton>
         )}
       </Box>
 
-      <DialogContent dividers sx={{ borderTop: '1px solid', borderBottom: '1px solid', borderColor: 'divider', px: 3, py: 2.5 }}>
-        {children}
-      </DialogContent>
+      <DialogContent sx={{ px: 3, py: 2.5 }}>{children}</DialogContent>
 
-      <DialogActions sx={{ p: 2, gap: 1 }}>
+      <DialogActions
+        sx={{
+          p: 2,
+          gap: 1,
+          borderTop: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
         {actions ? (
           actions
         ) : (
           <>
-            <CustomButton onClick={onClose} color="inherit" variant="text">
+            <CustomButton onClick={onClose} color="inherit" variant="outlined" size="small">
               Cancel
             </CustomButton>
             {onConfirm && (
@@ -93,6 +110,7 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
                 onClick={onConfirm}
                 variant="contained"
                 color="primary"
+                size="small"
                 loading={confirmLoading}
               >
                 {confirmText}

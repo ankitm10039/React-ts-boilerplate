@@ -1,214 +1,285 @@
-import React from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Container,
-  Box,
-  IconButton,
-  Tooltip,
-  Tabs,
-  Tab,
-} from '@mui/material';
-import { GitHub, Home, Info, Speed, AccountTree, Build, CloudUpload, PlayCircle } from '@mui/icons-material';
+import React, { useState, useRef } from 'react';
+import { Outlet } from 'react-router-dom';
+import { Box, Typography, InputBase } from '@mui/material';
+import { Search } from '@mui/icons-material';
+import Sidebar from '@/components/common/Sidebar';
+import TerminalToast from '@/components/common/TerminalToast';
+
+// ── Rich Tooltip Content Components ──────────────────────────────────────────
+
+const DbTooltipContent: React.FC = () => (
+  <Box
+    sx={{
+      bgcolor: 'background.paper',
+      border: '1px solid',
+      borderColor: 'divider',
+      p: 2,
+      boxShadow: '10px 10px 0px rgba(15,23,42,0.06)',
+      minWidth: 240,
+      borderRadius: 0,
+    }}
+  >
+    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+      <Typography
+        sx={{
+          fontSize: '10px',
+          fontFamily: '"JetBrains Mono", monospace',
+          fontWeight: 700,
+          color: 'text.secondary',
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+        }}
+      >
+        DATABASE_STATS
+      </Typography>
+      <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#10b981' }} />
+    </Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
+      {[
+        { label: 'Active Nodes', value: '12 / 12' },
+        { label: 'Query Latency', value: '4.2ms' },
+        { label: 'Uptime', value: '99.98%' },
+      ].map((item) => (
+        <Box key={item.label} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography sx={{ fontSize: '11px', color: 'text.secondary' }}>{item.label}</Typography>
+          <Typography sx={{ fontSize: '11px', fontWeight: 700 }}>{item.value}</Typography>
+        </Box>
+      ))}
+      <Box sx={{ width: '100%', bgcolor: '#f1f5f9', height: 4, mt: 0.75 }}>
+        <Box sx={{ bgcolor: '#10b981', height: '100%', width: '94%' }} />
+      </Box>
+    </Box>
+  </Box>
+);
+
+const InfraTooltipContent: React.FC = () => (
+  <Box
+    sx={{
+      bgcolor: 'background.paper',
+      border: '1px solid',
+      borderColor: 'divider',
+      p: 2,
+      boxShadow: '10px 10px 0px rgba(15,23,42,0.06)',
+      minWidth: 240,
+      borderRadius: 0,
+    }}
+  >
+    <Typography
+      sx={{
+        fontSize: '10px',
+        fontFamily: '"JetBrains Mono", monospace',
+        fontWeight: 700,
+        color: 'text.secondary',
+        textTransform: 'uppercase',
+        letterSpacing: '0.08em',
+        mb: 1.5,
+      }}
+    >
+      INFRASTRUCTURE
+    </Typography>
+    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0.5 }}>
+      {['#10b981', '#10b981', '#f59e0b', '#10b981', '#10b981', '#ef4444', '#10b981', '#e2e8f0'].map(
+        (color, i) => (
+          <Box key={i} sx={{ height: 16, bgcolor: color }} />
+        )
+      )}
+    </Box>
+    <Typography
+      sx={{
+        fontSize: '10px',
+        color: 'text.secondary',
+        mt: 1,
+        fontFamily: '"JetBrains Mono", monospace',
+      }}
+    >
+      1 node failure detected · US-EAST
+    </Typography>
+  </Box>
+);
 
 const MainLayout: React.FC = () => {
-  const navigate = navigateFn();
-  const location = useLocation();
+  const [searchValue, setSearchValue] = useState('');
+  const searchRef = useRef<HTMLInputElement>(null);
 
-  function navigateFn() {
-    try {
-      return useNavigate();
-    } catch {
-      return (_path: string) => {};
-    }
-  }
+  // CMD+K shortcut to focus search
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
-  const navItems = [
-    { label: 'Home', path: '/', icon: <Home /> },
-    { label: 'About', path: '/about', icon: <Info /> },
-    { label: 'Architecture', path: '/architecture', icon: <AccountTree /> },
-    { label: 'Dev Practices', path: '/development', icon: <Build /> },
-    { label: 'Deploy Guide', path: '/deployment', icon: <CloudUpload /> },
-    { label: 'Getting Started', path: '/getting-started', icon: <PlayCircle /> },
-  ];
-
-  // Determine current tab index
-  const currentPath = location.pathname;
-  const currentTab = navItems.some(item => item.path === currentPath) ? currentPath : '/';
-
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: string) => {
-    navigate(newValue);
+  // Configure routes & icons passed via dialkit to Sidebar
+  const dialkitConfig = {
+    routes: [
+      { label: 'Home', path: '/', icon: 'ti ti-layout-dashboard', richTooltip: <DbTooltipContent /> },
+      { label: 'Why Vibe / Features', path: '/features', icon: 'ti ti-sparkles' },
+      { label: 'Architecture', path: '/architecture', icon: 'ti ti-database', richTooltip: <InfraTooltipContent /> },
+      { label: 'Dev Practices', path: '/development', icon: 'ti ti-server' },
+      { label: 'Deploy Guide', path: '/deployment', icon: 'ti ti-cloud-upload' },
+      { label: 'Getting Started', path: '/getting-started', icon: 'ti ti-player-play' },
+      { label: 'Dev Tools & Quality', path: '/developer-tools', icon: 'ti ti-tool' },
+      { label: 'About', path: '/about', icon: 'ti ti-info-circle' },
+      { label: 'Typography', path: '/typography', icon: 'ti ti-typography' },
+    ]
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
-      {/* Glow Blur Blobs */}
-      <Box
-        sx={{
-          position: 'fixed',
-          top: '-15%',
-          right: '-10%',
-          width: '600px',
-          height: '600px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(0, 98, 255, 0.05) 0%, rgba(0, 98, 255, 0) 70%)',
-          zIndex: -1,
-          pointerEvents: 'none',
-        }}
-      />
-      <Box
-        sx={{
-          position: 'fixed',
-          bottom: '-10%',
-          left: '-15%',
-          width: '700px',
-          height: '700px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(51, 129, 255, 0.04) 0%, rgba(51, 129, 255, 0) 70%)',
-          zIndex: -1,
-          pointerEvents: 'none',
-        }}
-      />
+    <Box
+      sx={{
+        display: 'flex',
+        height: '100vh',
+        overflow: 'hidden',
+        bgcolor: 'background.default',
+      }}
+    >
+      {/* Reusable Expandable Sidebar with Dialkit Config */}
+      <Sidebar dialkit={dialkitConfig} />
 
-      {/* Main Top Header */}
-      <AppBar
-        position="static"
-        color="transparent"
-        elevation={0}
-        sx={{
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-          backgroundColor: '#ffffff',
-        }}
-      >
-        <Container maxWidth={false} sx={{ px: { xs: 2, sm: 4, md: 6 } }}>
-          <Toolbar disableGutters sx={{ justifyContent: 'space-between', minHeight: '64px' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }} onClick={() => navigate('/')}>
-              <Speed sx={{ color: 'primary.main', fontSize: 32 }} />
-              <Typography
-                variant="h6"
-                noWrap
-                sx={{
-                  fontWeight: 800,
-                  background: 'linear-gradient(135deg, #0062ff 0%, #3381ff 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  letterSpacing: '-0.02em',
-                }}
-              >
-                VibeApp
-              </Typography>
-            </Box>
-
-            <Tooltip title="GitHub Repository">
-              <IconButton
-                color="inherit"
-                href="https://github.com/ankitm10039/React-ts-boilerplate"
-                target="_blank"
-                rel="noopener noreferrer"
-                sx={{
-                  color: 'text.secondary',
-                  '&:hover': { color: 'primary.main', backgroundColor: 'rgba(0, 98, 255, 0.04)' },
-                }}
-              >
-                <GitHub />
-              </IconButton>
-            </Tooltip>
-          </Toolbar>
-        </Container>
-      </AppBar>
-
-      {/* SubHeader Tab Navigation */}
-      <Box
-        sx={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 1000,
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-          backgroundColor: 'rgba(255, 255, 255, 0.8)',
-          backdropFilter: 'blur(16px)',
-        }}
-      >
-        <Container maxWidth={false} sx={{ px: { xs: 2, sm: 4, md: 6 } }}>
-          <Tabs
-            value={currentTab}
-            onChange={handleTabChange}
-            variant="scrollable"
-            scrollButtons="auto"
-            indicatorColor="primary"
-            textColor="primary"
+      {/* ── Main Content Area ─────────────────────────────────────────────── */}
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+        {/* Command Bar */}
+        <Box
+          component="header"
+          sx={{
+            height: 56,
+            bgcolor: 'background.paper',
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+            display: 'flex',
+            alignItems: 'center',
+            px: 3,
+            gap: 3,
+            position: 'sticky',
+            top: 0,
+            zIndex: 40,
+            flexShrink: 0,
+          }}
+        >
+          {/* Search / Command Palette */}
+          <Box
             sx={{
-              minHeight: '48px',
-              '& .MuiTabs-indicator': {
-                height: '3px',
-                borderRadius: '3px 3px 0 0',
-              },
-              '& .MuiTab-root': {
-                minHeight: '48px',
-                fontWeight: 600,
-                fontSize: '0.9rem',
-                textTransform: 'none',
-                color: 'text.secondary',
-                px: 3,
-                '&:hover': {
-                  color: 'primary.main',
-                  backgroundColor: 'rgba(0, 98, 255, 0.02)',
-                },
-                '&.Mui-selected': {
-                  color: 'primary.main',
-                },
-              },
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.5,
+              bgcolor: '#f1f5f9',
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: '24px',
+              px: 2,
+              py: 0.75,
+              width: 380,
+              flexShrink: 0,
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': { bgcolor: '#e2e8f0' },
+              '&:focus-within': { borderColor: 'primary.main', bgcolor: '#ffffff', boxShadow: '0 0 0 3px rgba(0, 98, 255, 0.15)' },
             }}
           >
-            {navItems.map((item) => (
-              <Tab
-                key={item.path}
-                value={item.path}
-                label={
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    {React.cloneElement(item.icon, { fontSize: 'small' })}
-                    <span>{item.label}</span>
-                  </Box>
-                }
-              />
-            ))}
-          </Tabs>
-        </Container>
-      </Box>
-
-      {/* Main Content Area */}
-      <Box component="main" sx={{ flexGrow: 1, py: 6 }}>
-        <Container maxWidth={false} sx={{ px: { xs: 2, sm: 4, md: 6 } }}>
-          <Outlet />
-        </Container>
-      </Box>
-
-      {/* Footer */}
-      <Box
-        component="footer"
-        sx={{
-          py: 4,
-          px: 2,
-          mt: 'auto',
-          borderTop: '1px solid',
-          borderColor: 'divider',
-          backgroundColor: 'background.paper',
-        }}
-      >
-        <Container maxWidth={false} sx={{ px: { xs: 2, sm: 4, md: 6 } }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-            <Typography variant="body2" color="text.secondary">
-              © {new Date().getFullYear()} React + TS Boilerplate. Built with Vite and MUI.
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Created by <a href="https://github.com/ankitm10039" target="_blank" rel="noreferrer" style={{ color: '#0062ff', textDecoration: 'none', fontWeight: 600 }}>ankitm10039</a>
-            </Typography>
+            <Search sx={{ color: 'text.secondary', fontSize: 16 }} />
+            <InputBase
+              inputRef={searchRef}
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              placeholder="Search resources or execute command..."
+              sx={{
+                flex: 1,
+                fontSize: '12px',
+                fontFamily: 'Outfit, sans-serif',
+                fontWeight: 500,
+                '& input': { p: 0 },
+                '& input::placeholder': { color: '#94a3b8', opacity: 1 },
+              }}
+            />
+            <Box sx={{ display: 'flex', gap: 0.5 }}>
+              {['⌘', 'K'].map((k) => (
+                <Box
+                  key={k}
+                  sx={{
+                    fontSize: '9px',
+                    bgcolor: 'white',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: '4px',
+                    px: 0.75,
+                    py: 0.25,
+                    fontFamily: '"JetBrains Mono", monospace',
+                    fontWeight: 700,
+                    color: 'text.secondary',
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {k}
+                </Box>
+              ))}
+            </Box>
           </Box>
-        </Container>
+
+          {/* Spacer to align profile to the right since ticker is removed */}
+          <Box sx={{ flexGrow: 1 }} />
+
+          {/* User Profile */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.5,
+              borderLeft: '1px solid',
+              borderColor: 'divider',
+              pl: 3,
+              flexShrink: 0,
+              cursor: 'pointer',
+              transition: 'opacity 0.2s',
+              '&:hover': { opacity: 0.85 },
+            }}
+          >
+            <Box sx={{ textAlign: 'right' }}>
+              <Typography sx={{ fontSize: '12px', fontWeight: 800, fontFamily: 'Outfit, sans-serif', lineHeight: 1.2 }}>
+                Admin_User
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.25, justifyContent: 'flex-end' }}>
+                <Box sx={{ width: 6, height: 6, bgcolor: '#10b981', borderRadius: '50%' }} />
+                <Typography
+                  sx={{
+                    fontSize: '10px',
+                    color: 'text.secondary',
+                    fontFamily: 'Outfit, sans-serif',
+                    lineHeight: 1.4,
+                  }}
+                >
+                  root@system
+                </Typography>
+              </Box>
+            </Box>
+            <Box
+              component="img"
+              src="https://i.pravatar.cc/40?u=admin-vibeapp"
+              alt="User"
+              sx={{
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                border: '2px solid #0062ff',
+                display: 'block',
+              }}
+            />
+          </Box>
+        </Box>
+
+        {/* Page Content */}
+        <Box
+          component="main"
+          sx={{ flex: 1, overflow: 'auto', p: 3 }}
+        >
+          <Outlet />
+        </Box>
       </Box>
+
+      {/* Terminal Toasts */}
+      <TerminalToast />
     </Box>
   );
 };

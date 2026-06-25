@@ -7,15 +7,19 @@ import degit from 'degit';
 async function init() {
   console.log('⚡ Welcome to VibeApp CLI Bootstrapper ⚡\n');
 
-  // 1. Prompt for project name
-  const response = await prompts({
-    type: 'text',
-    name: 'projectName',
-    message: 'Enter your new project name:',
-    initial: 'vibe-app-project'
-  });
+  // 1. Get project name from command line argument or prompt
+  let targetDir = process.argv[2];
+  
+  if (!targetDir) {
+    const response = await prompts({
+      type: 'text',
+      name: 'projectName',
+      message: 'Enter your new project name:',
+      initial: 'vibe-app-project'
+    });
+    targetDir = response.projectName;
+  }
 
-  const targetDir = response.projectName;
   if (!targetDir) {
     console.log('Setup cancelled.');
     return;
@@ -45,7 +49,7 @@ async function init() {
     console.log(`\n🎉 Success! Your project is ready to run.`);
     console.log(`To start your application:`);
     console.log(`  cd ${targetDir}`);
-    console.log(`  npm run dev`);
+    console.log(`  npx vite`);
   } catch (err) {
     console.error('\n❌ Error cloning repository:', err.message);
   }

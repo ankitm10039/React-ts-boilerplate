@@ -25,7 +25,7 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
       helperText={errorMessage || helperText}
       sx={{
         '& .MuiOutlinedInput-root': {
-          borderRadius: 2,
+          borderRadius: 0,
         },
         ...props.sx,
       }}

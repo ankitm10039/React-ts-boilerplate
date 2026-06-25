@@ -8,26 +8,31 @@ export interface StatusBadgeProps {
   type?: StatusType;
 }
 
-const statusColorMap: Record<StatusType, { bg: string; text: string }> = {
+const statusColorMap: Record<StatusType, { bg: string; text: string; border: string }> = {
   success: {
-    bg: '#e1f5fe', // light blue background
-    text: '#0288d1', // blue text
+    bg: 'transparent',
+    text: '#10b981',
+    border: '#10b981',
   },
   warning: {
-    bg: '#fff3e0',
-    text: '#f57c00',
+    bg: '#fffbeb',
+    text: '#f59e0b',
+    border: '#f59e0b',
   },
   error: {
-    bg: '#ffebee',
-    text: '#d32f2f',
+    bg: 'transparent',
+    text: '#ef4444',
+    border: '#ef4444',
   },
   info: {
-    bg: '#e0f2fe',
-    text: '#0369a1',
+    bg: 'transparent',
+    text: '#0062ff',
+    border: '#0062ff',
   },
   default: {
-    bg: '#f1f5f9',
+    bg: 'transparent',
     text: '#475569',
+    border: '#cbd5e1',
   },
 };
 
@@ -39,20 +44,23 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ label, type = 'default' }) =>
       sx={{
         display: 'inline-flex',
         alignItems: 'center',
-        px: 1.5,
-        py: 0.5,
-        borderRadius: 50,
+        px: 1,
+        py: 0.25,
+        borderRadius: 0,
         backgroundColor: colors.bg,
+        border: '1px solid',
+        borderColor: colors.border,
       }}
     >
       <Typography
-        variant="caption"
         sx={{
+          fontFamily: '"JetBrains Mono", monospace',
           fontWeight: 700,
           color: colors.text,
-          fontSize: '0.75rem',
+          fontSize: '10px',
           textTransform: 'uppercase',
-          letterSpacing: '0.03em',
+          letterSpacing: '0.06em',
+          lineHeight: 1.4,
         }}
       >
         {label}
